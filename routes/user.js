@@ -13,10 +13,13 @@ const verifyLogin=(req,res,next)=>{
 // var ulala=false
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  let user = req.session.user
+ 
 
 
   productHelper.getAllProducts().then((products) => {
+    let user = req.session.user
+    
+    
     res.render("user/view-products", { customer: true, products, user });
   })
 
@@ -44,7 +47,12 @@ router.get('/signup', function (req, res, next) {
 router.post('/signup', function (req, res, next) {
 
   userHelpers.doSignup(req.body).then((response) => {
-    res.render("user/user-signup", { login: true })
+    req.session.loggedIn=true
+    req.session.user=response
+  
+    
+    res.redirect('/')
+
   })
 
 });
@@ -64,10 +72,17 @@ router.post('/login', function (req, res, next) {
   })
 
 });
-router.get('/cart',verifyLogin,(req,res)=>{
+router.get('/cart',verifyLogin,async(req,res)=>{
    let user = req.session.user
+   let products = await userHelpers.getCartProducts(req.session.user._id)
+   console.log(products)
 
   res.render('user/cart',{customer:true,user})
+})
+router.get('/add-to-cart/:id',verifyLogin,(req,res)=>{
+  userHelpers.addToCart(req.params.id,req.session.user._id).then(()=>{
+    res.redirect('/')
+  })
 })
 
 router.get('/logout', (req, res) => {
