@@ -1,0 +1,39 @@
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Minimal Projects</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Products<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/cart">Cart<span class="sr-only">(current)</span></a>
+                </li>
+                {{#if user}}
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Orders</a>
+                </li>
+                {{/if}}
+
+            </ul>
+            {{#if user}}
+            <div >
+                <a href="" class="btn btn-primary">{{user.Name}}</a>
+                <a href="/logout" class="btn btn-secondary">Logout</a>
+            </div>
+            {{else}}
+
+            <div >
+               <a href="/login" class="btn btn-primary">Log In</a> 
+                <a href="/signup" class="btn btn-secondary">Sign Up</a>
+            </div>
+            {{/if}}
+
+        </div>
+    </nav>
+</header>
