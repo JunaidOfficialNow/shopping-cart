@@ -12,16 +12,20 @@ const verifyLogin=(req,res,next)=>{
 
 // var ulala=false
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', async function (req, res, next) {
  
-
+  let cartCount = null
+  if(req.session.user){
+    cartCount = await userHelpers.getCartCount(req.session.user._id)
+  }
 
   productHelper.getAllProducts().then((products) => {
     let user = req.session.user
     
     
-    res.render("user/view-products", { customer: true, products, user });
+    res.render("user/view-products", { customer: true, products, user,cartCount });
   })
+
 
 
 });
@@ -75,13 +79,13 @@ router.post('/login', function (req, res, next) {
 router.get('/cart',verifyLogin,async(req,res)=>{
    let user = req.session.user
    let products = await userHelpers.getCartProducts(req.session.user._id)
-   console.log(products)
+   let cartCount = await userHelpers.getCartCount(req.session.user._id)
 
-  res.render('user/cart',{customer:true,user})
+  res.render('user/cart',{customer:true,user,products,cartCount})
 })
-router.get('/add-to-cart/:id',verifyLogin,(req,res)=>{
+router.get('/add-to-cart/:id',(req,res)=>{
   userHelpers.addToCart(req.params.id,req.session.user._id).then(()=>{
-    res.redirect('/')
+    res.json({status:true})
   })
 })
 
@@ -89,6 +93,11 @@ router.get('/logout', (req, res) => {
   req.session.destroy()
   // ulala=false
   res.redirect('/')
+})
+router.get('/remove-product/:id',(req,res)=>{
+  userHelpers.removeProduct(req.session.user._id,req.params.id).then(()=>{
+   res.redirect('/cart')
+  })
 })
 
 
