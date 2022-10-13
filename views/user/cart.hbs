@@ -9,26 +9,36 @@
                 <tr>
                     <th scope="col">Item</th>
                     <th scope="col">Price</th>
-       
+
                     <th scope="col">Image</th>
                     <th scope="col">Quantity</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each products}}
-                <tr>
-                    {{#each this.product}}
-                    <th scope="row">{{this.Name}}</th>
-                    <td>{{this.price}}</td>
-                    <td><img style="width: 50px;height:50px;" src="/product-images/{{this._id}}.jpg"></td>
-                    {{/each}}
+                <tr id="cartRow">
+
+                    <th scope="row">{{this.product.Name}}</th>
+                    <td>{{this.product.price}}</td>
+                    <td><img style="width: 50px;height:50px;" src="/product-images/{{this.product._id}}.jpg"></td>
+
                     <td>
-                        <button class="cart-item-count btn btn-primary mr-3">-</button><span>{{this.quantity}}</span> <button class="btn btn-primary cart-item-count ml-3">+</button>
+                        {{!-- {{#if MinBtn}} --}}
+                        <button id="MinusButton" class="cart-item-count btn btn-primary mr-3"
+                            onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">-</button>
+                        {{!-- {{/if}} --}}
+                        <span id="QuantityCount">{{this.quantity}}</span>
+                        <button class="btn btn-primary cart-item-count ml-3 "
+                            onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">+</button>
                     </td>
                     <td>
-                        <a href="/remove-product/{{this._id}}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete {{this.Name}}')">Remove</a>
-                        {{!-- <a href="/admin/delete-product?id={{this._id}}&name=junaid" class="btn btn-danger">Delete</a> --}}
-                        
+                        {{!-- <a href="/remove-product/{{this._id}}" class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete {{this.Name}}')">Remove</a> --}}
+                        <button class="btn btn-danger"
+                            onclick="RemoveProduct('{{this._id}}','{{this.product._id}}')">Remove</button>
+                        {{!-- <a href="/admin/delete-product?id={{this._id}}&name=junaid"
+                            class="btn btn-danger">Delete</a> --}}
+
                     </td>
                 </tr>
                 {{/each}}
@@ -36,3 +46,63 @@
         </table>
     </div>
 </section>
+<script>
+
+
+
+    function changeQuantity(cartId, proId, count) {
+        $.ajax({
+            url: '/change-product-quantity',
+            data: {
+                cart: cartId,
+                product: proId,
+                count: count
+            },
+            method: 'post',
+            success: (response) => {
+                if (response.status) {
+                    if (count === 1) {
+                        let Count = $('#QuantityCount').html()
+                        Count = parseInt(Count) + 1
+                        $("#QuantityCount").html(Count)
+                        if (Count === 1) {
+                            document.getElementById('MinusButton').style.display = 'none'
+                        } else if (Count > 1) {
+                            document.getElementById('MinusButton').style.display = 'inline'
+
+                        }
+                        } else {
+                            let Count = $('#QuantityCount').html()
+                            Count = parseInt(Count) - 1
+                            $("#QuantityCount").html(Count)
+                            if (Count === 1) {
+                                document.getElementById('MinusButton').style.display = 'none'
+                            } else if (Count > 1) {
+                                document.getElementById('MinusButton').style.display = 'inline'
+                            }
+
+
+
+                        }
+                    }
+
+                }
+            })
+    }
+    function RemoveProduct(cartId, proId) {
+        $.ajax({
+            url: '/remove-product',
+            data: {
+                cart: cartId,
+                product: proId
+            },
+            method: 'post',
+            success: (response) => {
+                if (response.status) {
+                    document.getElementById('cartRow').remove()
+                }
+
+            }
+        })
+    }
+</script>

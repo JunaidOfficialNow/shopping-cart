@@ -57,7 +57,7 @@ module.exports = {
                 let proExist = userCart.products.findIndex(product => product.item == proId)
                 // console.log(proExist)
                 if (proExist != -1) {
-                    db.get().collection(collections.CART_COLLECTION).updateOne({ "products.item": objectId(proId) },
+                    db.get().collection(collections.CART_COLLECTION).updateOne({user:objectId(userId), "products.item": objectId(proId) },
                         {
                             $inc: { "products.$.quantity": 1 }
                         }
@@ -124,6 +124,11 @@ module.exports = {
                         foreignField:'_id',
                         as:'product'
                     }
+                },
+                {
+                    $project:{
+                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                    }
                 }
                 // {
                 //     $lookup: {
@@ -158,14 +163,30 @@ module.exports = {
         })
 
     },
-    removeProduct: function (userId, proId) {
+    removeProduct: function (details) {
+        
         return new Promise(async (resolve, reject) => {
-            await db.get().collection(collections.CART_COLLECTION).updateOne({ user: objectId(userId) },
+            await db.get().collection(collections.CART_COLLECTION).updateOne({_id: objectId(details.cart) },
                 {
-                    $pull: { products: objectId(proId) }
+                    $pull: { 'products':{item:objectId(details.product)}}
                 })
             resolve()
-        })
+        }) 
 
+    },
+    changeProductQuantity:(details)=>{
+
+            let Count = parseInt(details.count)
+        return new Promise((resolve,reject)=>{
+            db.get().collection(collections.CART_COLLECTION).updateOne({_id:objectId(details.cart), "products.item": objectId(details.product) },
+                        {
+                            $inc: { "products.$.quantity": Count}
+                        }
+                    ).then(async() => {
+                        let result = await db.get().collection(collections.CART_COLLECTION).findOne({_id:objectId(details.cart)})
+                        console.log(result.products[0].quantity)
+                        resolve(result.products[0].quantity)
+                    })
+        })
     }
 }

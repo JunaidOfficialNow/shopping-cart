@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var productHelper = require("../helpers/product-helpers.js")
 const userHelpers = require("../helpers/user-helpers")
+const Handlebars = require('handlebars')
 const verifyLogin=(req,res,next)=>{
   if(req.session.loggedIn){
     next()
@@ -80,6 +81,24 @@ router.get('/cart',verifyLogin,async(req,res)=>{
    let user = req.session.user
    let products = await userHelpers.getCartProducts(req.session.user._id)
    let cartCount = await userHelpers.getCartCount(req.session.user._id)
+   console.log(products)
+  //  var quantity = products[0].quantity
+
+  //  var MinBtn = true
+  //  if ( quantity===1){
+  //       MinBtn = false
+  //  }else{
+  //   MinBtn = true
+  //  }
+
+  //  Handlebars.registerHelper('MinusBtn',function(quantity){
+  //   if(quantity===1){
+  //     return false
+  //   }else{
+  //     return true
+  //   } 
+
+  //  })
 
   res.render('user/cart',{customer:true,user,products,cartCount})
 })
@@ -94,9 +113,17 @@ router.get('/logout', (req, res) => {
   // ulala=false
   res.redirect('/')
 })
-router.get('/remove-product/:id',(req,res)=>{
-  userHelpers.removeProduct(req.session.user._id,req.params.id).then(()=>{
-   res.redirect('/cart')
+router.post('/remove-product',(req,res)=>{
+  userHelpers.removeProduct(req.body).then(()=>{
+    res.json({status:true})
+  })
+})
+router.post('/change-product-quantity',(req,res,next)=>{
+  
+  userHelpers.changeProductQuantity(req.body).then((result)=>{
+    res.json({status:true,result
+    })
+
   })
 })
 
