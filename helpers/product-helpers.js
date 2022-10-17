@@ -3,6 +3,7 @@ var collections=require("../config/collections")
 var objectId = require('mongodb').ObjectID
 module.exports={
     addProduct:(product,callback)=>{
+        product.price = parseInt(product.price)
         db.get().collection(collections.PRODUCT_COLLECTION).insertOne(product).then((data)=>{
             var objectId=product._id
             callback(objectId)

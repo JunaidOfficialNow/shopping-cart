@@ -20,6 +20,7 @@ router.get('/add-product', function (req, res) {
   res.render("admin/add-product")
 })
 router.post('/add-product', function (req, res) {
+  
   productHelper.addProduct(req.body, (id) => {
     res.render("admin/add-product")
     let image = req.files.image
