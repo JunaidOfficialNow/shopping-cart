@@ -1,0 +1,59 @@
+<section>
+    <div class="container">
+
+
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Address</th>
+                    
+                    <th scope="col">Pincode</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Payment</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each orders}}
+                <tr>
+                    <th scope="row">{{this.date}}</th>
+                    <td>{{this.deliveryDetails.address}}</td>
+                    <td>{{this.deliveryDetails.pincode}}</td>
+
+                    <td>{{this.totalAmount}}</td>
+                    <td>{{this.paymentMethod}}</td>
+                    <td id="{{this._id}}">{{this.status}}</td>
+                    
+                    <td>
+                        <a href="/admin/view-order-products/{{this._id}}" class="btn btn-primary">View Products</a>
+                        <a href="/admin/view-order-customer/{{this.userId}}" class="btn btn-primary">View Customer</a>
+                        <button class="btn btn-primary" onclick="ShipOrder('{{this._id}}')">Ship Order</button>
+      
+                        
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>
+<script>
+    function ShipOrder(orderId){
+        $.ajax({
+            url:"/admin/ship-order",
+            data:{
+                orderId:orderId
+            },
+            method:'post',
+            success:(response)=>{
+                
+            
+                if (response.status){
+                    document.getElementById(orderId).innerHTML='shipped'
+                }
+
+            }
+        })
+    }
+</script>

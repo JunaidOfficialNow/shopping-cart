@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col-md-6 m-auto">
+        <div class="container mt-5 pl-5">
+            {{!-- {{#unless cart}}
+            <h3>login first</h3>
+            {{/unless}} --}}
+            <h2 class="text-center">Login</h2>
+            <form action="/admin/login" method="post">
+                <div class="form-group">
+                    <label for=""> Email address</label>
+                    <input type="email" class="form-control" name="Email" placeholder="Enter email">
+                </div>
+
+                <div class="form-group">
+                    <label for="">Password</label>
+                    <input type="password" name="Password" placeholder="Enter your password" class="form-control">
+                </div>
+                <button type='submit' class="btn btn-primary float-right">Login</button>
+                 {{!-- {{#unless loggedIn}}
+                <div class="row text-center">
+                    <h6 style="color:red">Logged In Failed!!</h6>
+                </div>
+                 {{/unless}} --}}
+                   {{#if loginErr}}
+                <div class="row text-center">
+                    <h6 style="color:red">Invalid username or Password</h6>
+                </div>
+                 {{/if}}
+            </form>
+        </div>
+
+    </div>
+</div>

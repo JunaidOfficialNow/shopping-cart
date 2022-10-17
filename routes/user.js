@@ -4,7 +4,7 @@ var productHelper = require("../helpers/product-helpers.js")
 const userHelpers = require("../helpers/user-helpers")
 const Handlebars = require('handlebars')
 const verifyLogin=(req,res,next)=>{
-  if(req.session.loggedIn){
+  if(req.session.user.loggedIn){
     next()
   }else{
     res.render('user/user-login',{login:true,cart:false})
@@ -32,13 +32,13 @@ router.get('/', async function (req, res, next) {
 });
 router.get('/login', function (req, res, next) {
   // console.log(req.session)
-  if (req.session.loggedIn) {
+  if (req.session.user) {
     res.redirect('/')
 
 
   } else {
-    res.render("user/user-login", { login: true ,loginErr:req.session.loginErr,cart:true})
-    req.session.loginErr=false
+    res.render("user/user-login", { login: true ,loginErr:req.session.userLoginErr,cart:true})
+    req.session.userLoginErr=false
   }
 
 
@@ -52,9 +52,9 @@ router.get('/signup', function (req, res, next) {
 router.post('/signup', function (req, res, next) {
 
   userHelpers.doSignup(req.body).then((response) => {
-    req.session.loggedIn=true
+   
     req.session.user=response
-  
+    req.session.user.loggedIn=true
     
     res.redirect('/')
 
@@ -66,11 +66,12 @@ router.post('/login', function (req, res, next) {
   userHelpers.doLogin(req.body).then((response) => {
     if (response.status) {
       // ulala=true
-      req.session.loggedIn = true
+      
       req.session.user = response.user
+      req.session.user.loggedIn = true
       res.redirect("/")
     } else {
-      req.session.loginErr=true
+      req.session.userLoginErr=true
       res.redirect('/login')
       // res.render("user/user-login", { login: true ,loggedIn:false})
     }
@@ -116,11 +117,12 @@ router.get('/add-to-cart/:id',(req,res)=>{
 })
 
 router.get('/logout', (req, res) => {
-  req.session.destroy()
+  req.session.user= null
   // ulala=false 
   res.redirect('/')
 })
 router.post('/remove-product',(req,res)=>{
+   
   userHelpers.removeProduct(req.body).then(()=>{
     res.json({status:true})
   })

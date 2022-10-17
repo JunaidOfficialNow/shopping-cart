@@ -88,7 +88,7 @@
         })
     }
     function RemoveProduct(cartId, proId,proName) {
-        return confirm('Are you sure you want to remove?')
+
         $.ajax({
             url: '/remove-product',
             data: {
@@ -97,6 +97,7 @@
             },
             method: 'post',
             success: (response) => {
+                console.log('hahah')
                 if (response.status) {
                     document.getElementById(proName).remove()
                 }

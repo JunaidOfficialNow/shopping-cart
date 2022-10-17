@@ -174,6 +174,7 @@ module.exports = {
     removeProduct: function (details) {
 
         return new Promise(async (resolve, reject) => {
+            
             await db.get().collection(collections.CART_COLLECTION).updateOne({ _id: objectId(details.cart) },
                 {
                     $pull: { products: { item: objectId(details.product) } }
